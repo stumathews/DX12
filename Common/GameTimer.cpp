@@ -5,9 +5,13 @@
 #include <windows.h>
 #include "GameTimer.h"
 
-GameTimer::GameTimer()
-: mSecondsPerCount(0.0), mDeltaTime(-1.0), mBaseTime(0), 
-  mPausedTime(0), mPrevTime(0), mCurrTime(0), mStopped(false)
+GameTimer::GameTimer() : mSecondsPerCount(0.0), 
+						 mDeltaTime(-1.0), 
+						 mBaseTime(0),  
+						 mPausedTime(0), 
+						 mPrevTime(0), 
+						 mCurrTime(0), 
+						 mStopped(false)
 {
 	__int64 countsPerSec;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
@@ -27,7 +31,7 @@ float GameTimer::TotalTime()const
 	// ----*---------------*-----------------*------------*------------*------> time
 	//  mBaseTime       mStopTime        startTime     mStopTime    mCurrTime
 
-	if( mStopped )
+	if(mStopped)
 	{
 		return (float)(((mStopTime - mPausedTime)-mBaseTime)*mSecondsPerCount);
 	}
@@ -76,7 +80,7 @@ void GameTimer::Start()
 	// ----*---------------*-----------------*------------> time
 	//  mBaseTime       mStopTime        startTime     
 
-	if( mStopped )
+	if(mStopped)
 	{
 		mPausedTime += (startTime - mStopTime);	
 
@@ -88,7 +92,7 @@ void GameTimer::Start()
 
 void GameTimer::Stop()
 {
-	if( !mStopped )
+	if(!mStopped)
 	{
 		__int64 currTime;
 		QueryPerformanceCounter((LARGE_INTEGER*)&currTime);
@@ -100,7 +104,7 @@ void GameTimer::Stop()
 
 void GameTimer::Tick()
 {
-	if( mStopped )
+	if(mStopped)
 	{
 		mDeltaTime = 0.0;
 		return;
@@ -111,7 +115,7 @@ void GameTimer::Tick()
 	mCurrTime = currTime;
 
 	// Time difference between this frame and the previous.
-	mDeltaTime = (mCurrTime - mPrevTime)*mSecondsPerCount;
+	mDeltaTime = (mCurrTime - mPrevTime) * mSecondsPerCount;
 
 	// Prepare for next frame.
 	mPrevTime = mCurrTime;

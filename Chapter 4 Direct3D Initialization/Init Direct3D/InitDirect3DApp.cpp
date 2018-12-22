@@ -11,6 +11,7 @@
 
 using namespace DirectX;
 
+// Derivation of D3DApp
 class InitDirect3DApp : public D3DApp
 {
 public:
@@ -36,6 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
     try
     {
+		// Create an instance of our App class
         InitDirect3DApp theApp(hInstance);
         if(!theApp.Initialize())
             return 0;
@@ -43,23 +45,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
         return theApp.Run();
     }
     catch(DxException& e)
-    {
+    {		
         MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
         return 0;
     }
 }
 
-InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance)
-: D3DApp(hInstance) 
-{
-}
+InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : D3DApp(hInstance) { }
 
-InitDirect3DApp::~InitDirect3DApp()
-{
-}
+InitDirect3DApp::~InitDirect3DApp(){ }
 
 bool InitDirect3DApp::Initialize()
 {
+	// Call the base Initialize()
     if(!D3DApp::Initialize())
 		return false;
 		
@@ -68,13 +66,11 @@ bool InitDirect3DApp::Initialize()
 
 void InitDirect3DApp::OnResize()
 {
+	// Call the base
 	D3DApp::OnResize();
 }
 
-void InitDirect3DApp::Update(const GameTimer& gt)
-{
-
-}
+void InitDirect3DApp::Update(const GameTimer& gt){ }
 
 void InitDirect3DApp::Draw(const GameTimer& gt)
 {
@@ -86,7 +82,7 @@ void InitDirect3DApp::Draw(const GameTimer& gt)
     // Reusing the command list reuses memory.
     ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
-	// Indicate a state transition on the resource usage.
+	// Indicate a state transition on the resource(backbuffer) usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 

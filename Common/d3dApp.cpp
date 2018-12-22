@@ -17,17 +17,21 @@ MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return D3DApp::GetApp()->MsgProc(hwnd, msg, wParam, lParam);
 }
 
+// We set our static internal pointer to a D3DApp here to nullptr
+// This is a pointer to ourself when we are instantiated? Why have this?
 D3DApp* D3DApp::mApp = nullptr;
 D3DApp* D3DApp::GetApp()
 {
     return mApp;
 }
 
-D3DApp::D3DApp(HINSTANCE hInstance)
-:	mhAppInst(hInstance)
+// Constructor - note it sets it hInstance in the constructor
+D3DApp::D3DApp(HINSTANCE hInstance) : mhAppInst(hInstance)
 {
     // Only one D3DApp can be constructed.
     assert(mApp == nullptr);
+
+	// we keep a pointer to ourself
     mApp = this;
 }
 
@@ -118,6 +122,7 @@ bool D3DApp::Initialize()
 	return true;
 }
  
+// Fills in and initializes the descriptor heap buffers we've declared with useful dx init stuff
 void D3DApp::CreateRtvAndDsvDescriptorHeaps()
 {
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
@@ -125,8 +130,8 @@ void D3DApp::CreateRtvAndDsvDescriptorHeaps()
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvHeapDesc.NodeMask = 0;
-    ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
-        &rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
+
+    ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
 
 
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
@@ -134,8 +139,8 @@ void D3DApp::CreateRtvAndDsvDescriptorHeaps()
     dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvHeapDesc.NodeMask = 0;
-    ThrowIfFailed(md3dDevice->CreateDescriptorHeap(
-        &dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
+
+    ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDsvHeap.GetAddressOf())));
 }
 
 void D3DApp::OnResize()
@@ -443,9 +448,9 @@ bool D3DApp::InitDirect3D()
 			IID_PPV_ARGS(&md3dDevice)));
 	}
 
-	ThrowIfFailed(md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE,
-		IID_PPV_ARGS(&mFence)));
+	ThrowIfFailed(md3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 
+	// This asks the GPU for the size of various types of recource descriptors it supports
 	mRtvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	mDsvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	mCbvSrvUavDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -485,9 +490,7 @@ void D3DApp::CreateCommandObjects()
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 	ThrowIfFailed(md3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)));
 
-	ThrowIfFailed(md3dDevice->CreateCommandAllocator(
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf())));
+	ThrowIfFailed(md3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(mDirectCmdListAlloc.GetAddressOf())));
 
 	ThrowIfFailed(md3dDevice->CreateCommandList(
 		0,
@@ -525,10 +528,7 @@ void D3DApp::CreateSwapChain()
     sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	// Note: Swap chain uses queue to perform flush.
-    ThrowIfFailed(mdxgiFactory->CreateSwapChain(
-		mCommandQueue.Get(),
-		&sd, 
-		mSwapChain.GetAddressOf()));
+    ThrowIfFailed(mdxgiFactory->CreateSwapChain(mCommandQueue.Get(), &sd, mSwapChain.GetAddressOf()));
 }
 
 void D3DApp::FlushCommandQueue()

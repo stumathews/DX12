@@ -17,6 +17,7 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+// Main base class for all new D3D12 Applications
 class D3DApp
 {
 protected:
@@ -28,6 +29,7 @@ protected:
 
 public:
 
+	// Stores a pointer to itself? or something like it?
     static D3DApp* GetApp();
     
 	HINSTANCE AppInst()const;
@@ -92,6 +94,7 @@ protected:
 	GameTimer mTimer;
 	
     Microsoft::WRL::ComPtr<IDXGIFactory4> mdxgiFactory;
+	// This is the actual swap chain, its buffers are stored below separately as a list of resource buffers
     Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
     Microsoft::WRL::ComPtr<ID3D12Device> md3dDevice;
 
@@ -104,6 +107,7 @@ protected:
 
 	static const int SwapChainBufferCount = 2;
 	int mCurrBackBuffer = 0;
+	// This is our swap chain which is an array, which has two resources in it.
     Microsoft::WRL::ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
     Microsoft::WRL::ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
